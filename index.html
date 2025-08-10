@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Wedding Envelope Animation</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        height: 100vh;
+        background: radial-gradient(circle, #ffccd5, #ff758f, #d6336c);
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        font-family: 'Poppins', sans-serif;
+        color: white;
+    }
+    h1 {
+        font-size: 4rem;
+        text-shadow: 0 0 10px rgba(255,255,255,0.9), 0 0 20px #ff4d6d, 0 0 40px #ff4d6d;
+        animation: glow 2s ease-in-out infinite alternate;
+        z-index: 2;
+        position: relative;
+        text-align: center;
+    }
+    @keyframes glow {
+        from { text-shadow: 0 0 10px white, 0 0 20px #ff4d6d, 0 0 40px #ff4d6d; }
+        to { text-shadow: 0 0 20px white, 0 0 40px #ff4d6d, 0 0 80px #ff4d6d; }
+    }
+    .names {
+        font-size: 2rem;
+        margin-top: 10px;
+        animation: fadeIn 3s ease forwards;
+        opacity: 0;
+        z-index: 2;
+        position: relative;
+        text-align: center;
+    }
+    @keyframes fadeIn { to { opacity: 1; } }
+    button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background: #ffd700;
+        color: #000;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        z-index: 2;
+        position: relative;
+    }
+    button:hover { background: #ffcc00; }
+    /* Ikon Musik */
+    .music-control {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+        z-index: 20;
+        transition: transform 0.3s ease;
+    }
+    .music-control:hover {
+        transform: scale(1.1);
+    }
+    /* Hearts background */
+    .hearts {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        overflow: hidden;
+        z-index: 0;
+    }
+    .heart {
+        position: absolute;
+        color: #ffb3c1;
+        font-size: 20px;
+        animation: float 5s linear infinite;
+        opacity: 0.8;
+    }
+    @keyframes float {
+        0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+        50% { opacity: 1; }
+        100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+    /* Popup */
+    .popup {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.6);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        z-index: 10;
+    }
+    .popup.active { display: flex; }
+    /* Amplop */
+    .envelope-container {
+        position: relative;
+        width: 300px;
+        height: 200px;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+    .envelope {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(145deg, #d62828, #b22222);
+        position: relative;
+        border-radius: 6px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    .flap {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 50%;
+        background: linear-gradient(145deg, #e63946, #c71f37);
+        clip-path: polygon(0 0, 50% 100%, 100% 0);
+        transform-origin: top;
+        transition: transform 0.6s ease;
+        z-index: 3;
+    }
+    .seal {
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50px;
+        height: 50px;
+        background: radial-gradient(circle at 30% 30%, #fff6b7, #d4af37);
+        border-radius: 50%;
+        z-index: 4;
+        box-shadow: 0 0 10px gold;
+    }
+    /* Kartu terpisah */
+    .card {
+        margin-top: 20px;
+        width: 300px;
+        max-height: 250px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        padding: 20px;
+        text-align: center;
+        font-size: 1rem;
+        color: #333;
+        line-height: 1.4;
+        overflow-y: auto;
+        display: none;
+    }
+    .card::-webkit-scrollbar { width: 6px; }
+    .card::-webkit-scrollbar-thumb {
+        background: #ff4d6d;
+        border-radius: 10px;
+    }
+    .card::-webkit-scrollbar-track { background: #ffe5ec; }
+
+    /* Media Query agar rapi di HP & Tablet */
+    @media (max-width: 600px) {
+        h1 { font-size: 2.5rem; }
+        .names { font-size: 1.2rem; }
+        .envelope-container { width: 220px; height: 150px; }
+        .card { width: 220px; font-size: 0.9rem; }
+        button { padding: 8px 16px; font-size: 0.9rem; }
+        .music-control { width: 40px; height: 40px; }
+    }
+</style>
+</head>
+<body>
+
+<h1>💍 Happy Wedding 💍</h1>
+<div class="names">Puput ❤️ Fatih </div>
+<button id="showPopup">Lihat Ucapan</button>
+
+<!-- Ikon Musik -->
+<img src="https://cdn-icons-png.flaticon.com/512/727/727240.png" alt="Music Control" class="music-control" id="musicControl">
+
+<div class="hearts"></div>
+
+<!-- Popup Amplop & Kartu -->
+<div class="popup" id="popup">
+    <div class="envelope-container" id="envelopeContainer">
+        <div class="envelope">
+            <div class="flap" id="flap"></div>
+            <div class="seal"></div>
+        </div>
+    </div>
+    <div class="card" id="card">
+       Dear Mba Puput<br><br> 
+      Selamat menempuh hidup baru.💍<br><br>
+        Semoga pernikahan ini menjadi awal yang indah menuju kehidupan rumah tangga yang harmonis, penuh kasih, dan dilimpahi keberkahan.<br><br>
+        Mohon maaf saya belum dapat hadir langsung di momen spesial ini, namun doa terbaik senantiasa saya panjatkan untuk kalian berdua.<br><br>
+        Semoga bahagia terus sampai kakek-nenek! ❤️
+    </div>
+    <audio id="bgMusic" loop>
+        <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mpeg">
+    </audio>
+</div>
+
+<script>
+/* Hearts background animation */
+const heartsContainer = document.querySelector('.hearts');
+function createHeart() {
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.innerHTML = '❤️';
+    heart.style.left = Math.random() * 100 + 'vw';
+    heart.style.animationDuration = (3 + Math.random() * 5) + 's';
+    heart.style.fontSize = (10 + Math.random() * 30) + 'px';
+    heartsContainer.appendChild(heart);
+    setTimeout(() => { heart.remove(); }, 8000);
+}
+setInterval(createHeart, 300);
+
+/* Popup & Amplop buka/tutup */
+const showPopup = document.getElementById('showPopup');
+const popup = document.getElementById('popup');
+const flap = document.getElementById('flap');
+const card = document.getElementById('card');
+const bgMusic = document.getElementById('bgMusic');
+let isOpen = false; // status amplop
+
+showPopup.addEventListener('click', () => {
+    popup.classList.add('active');
+});
+
+popup.addEventListener('click', (e) => {
+    if (e.target === popup) {
+        popup.classList.remove('active');
+        flap.style.transform = 'rotateX(0deg)';
+        card.style.display = 'none';
+        isOpen = false;
+    }
+});
+
+document.getElementById('envelopeContainer').addEventListener('click', () => {
+    if (!isOpen) {
+        flap.style.transform = 'rotateX(-160deg)';
+        setTimeout(() => { card.style.display = 'block'; }, 600);
+        isOpen = true;
+    } else {
+        flap.style.transform = 'rotateX(0deg)';
+        card.style.display = 'none';
+        isOpen = false;
+    }
+});
+
+/* Musik Control */
+const musicControl = document.getElementById('musicControl');
+let isPlaying = false;
+musicControl.addEventListener('click', () => {
+    if (!isPlaying) {
+        bgMusic.play();
+        isPlaying = true;
+        musicControl.src = "https://cdn-icons-png.flaticon.com/512/727/727245.png"; // ikon pause
+    } else {
+        bgMusic.pause();
+        isPlaying = false;
+        musicControl.src = "https://cdn-icons-png.flaticon.com/512/727/727240.png"; // ikon play
+    }
+});
+</script>
+
+</body>
+</html>
